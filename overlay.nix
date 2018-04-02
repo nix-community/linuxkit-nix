@@ -9,6 +9,18 @@ self: super: {
   linuxkit = self.callPackage ./linuxkit { };
   linuxkit-builder = self.callPackage ./linuxkit-builder { };
 
+  nix-script-store-plugin = self.stdenv.mkDerivation {
+    name = "nix-script-store-plugin";
+    nativeBuildInputs = [ self.pkgconfig self.cmake ];
+    buildInputs = [ self.nixUnstable ];
+    src = self.fetchFromGitHub {
+      owner = "puffnfresh";
+      repo = "nix-script-store-plugin";
+      rev = "fe6bff57d2a6b8fdefad63b1881b477a6c3e646b";
+      sha256 = "0b1jbnw9hl99cqcqyv0szxs1mhvxzp91gy65194yyfhrdj5rx19m";
+    };
+  };
+
   nixUnstable = self.nix.overrideDerivation (drv: {
     name = "nix-2.0pre6018_g088ef817";
     src = self.fetchFromGitHub {
