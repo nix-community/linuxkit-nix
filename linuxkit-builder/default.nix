@@ -166,7 +166,7 @@ let
     mkdir -p "${dir}"
     ln -fs ${linuxkitKernel}/${img} "${dir}/nix-kernel"
     ln -fs ${initrd}/initrd "${dir}/nix-initrd.img"
-    echo -n "console=ttyS0 panic=1 command=${stage2Init} loglevel=7 debug" > "${dir}/nix-cmdline"
+    echo -n "console=ttyS0 panic=1 command=${stage2Init} loglevel=7 debug acpi=debug" > "${dir}/nix-cmdline"
     exec ${linuxkit}/bin/linuxkit run \
       hyperkit \
       -hyperkit ${hyperkit}/bin/hyperkit \
