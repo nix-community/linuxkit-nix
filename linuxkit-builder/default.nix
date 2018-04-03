@@ -143,7 +143,8 @@ let
     export NIX_SSL_CERT_FILE="${pkgsLinux.cacert}/etc/ssl/certs/ca-bundle.crt"
     mkdir -p /run/nix-daemon
     ${pkgsLinux.virtsock}/bin/vsudd -inport 2374:unix:/run/nix-daemon/daemon.sock &
-    exec ${pkgsLinux.socat}/bin/socat UNIX-LISTEN:/run/nix-daemon/daemon.sock EXEC:"nix-daemon --stdio"
+    ${pkgsLinux.socat}/bin/socat UNIX-LISTEN:/run/nix-daemon/daemon.sock EXEC:"nix-daemon --stdio"
+    exec halt -f
   '';
 
   img = "bzImage";
@@ -154,7 +155,7 @@ let
       }
     ];
   };
-  dir = "$HOME/.nixpkgs/linuxkit-builder";
+  dir = "/var/run/nix/linuxkit-builder";
   linuxkit-nix-daemon = writeScriptBin "linuxkit-nix-daemon" ''
     #!${bash}/bin/bash
 
