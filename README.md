@@ -6,13 +6,14 @@ Install the packages into the default profile:
 
 Update `/etc/nix/nix.conf` with the plugin:
 
-    plugin-files=/nix/var/nix/profiles/default/lib/nix/plugins/libnix-script-store.dylib
+    plugin-files = /nix/var/nix/profiles/default/lib/nix/plugins/libnix-script-store.dylib
+    builders = script:///nix/var/nix/profiles/default/bin/linuxkit-builder x86_64-linux - - - kvm,big-parallel
 
 Restart nix-daemon:
 
     sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist
     sudo launchctl load /Library/LaunchDaemons/org.nixos.nix-daemon.plist
 
-Then you can use the builder with the `builders` flag:
+Now you can run builds but at the moment you have to use the `--no-sandbox` flag:
 
-    nix-build --builders 'script:///nix/var/nix/profiles/default/bin/linuxkit-builder x86_64-linux - - - big-parallel'
+    nix-build --no-sandbox example.nix
