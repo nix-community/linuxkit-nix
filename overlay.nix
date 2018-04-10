@@ -6,6 +6,7 @@ self: super: {
   };
   virtsock = self.callPackage ./virtsock { };
   vpnkit = self.callPackage ./vpnkit { };
+  go-vpnkit = self.callPackage ./go-vpnkit { };
   linuxkit = self.callPackage ./linuxkit { };
   linuxkit-builder = self.callPackage ./linuxkit-builder { };
 
