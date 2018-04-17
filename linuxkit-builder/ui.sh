@@ -1,5 +1,6 @@
-#!@bash@/bin/bash -eu
+#!@bash@/bin/bash -eux
 
+PATH=@coreutils@/bin:@openssh@/bin:@gnutar@/bin
 BOOT_FILES=@boot_files@
 HOST_PORT=@hostPort@
 INTEGRATED_PATH=@integrated_path@
@@ -51,8 +52,11 @@ if [ ! -d "$DIR/keys" ]; then
 fi
 
 cp "$INTEGRATED_PATH" "$DIR/integrated.sh"
+chmod u+w "$DIR/integrated.sh"
 chmod +x "$DIR/integrated.sh"
+
 cp "$EXAMPLE_PATH" "$DIR/example.nix"
+chmod u+w "$DIR/example.nix"
 
 cat <<EOF > "$DIR/ssh-config"
 Host nix-linuxkit
@@ -100,10 +104,20 @@ EOF
 
 chmod +x "$DIR/finish-setup.sh"
 
-PATH="$VPNKIT_ROOT/bin:$PATH"
-exec "$LINUXKIT_ROOT/bin/linuxkit" run \
+function finish {
+    if [ -f "$DIR/nix-state/hyperkit.pid" ]; then
+        # yeah, yeah, /usr/bin
+        /usr/bin/pkill -F ~/.nixpkgs/linuxkit-builder/nix-state/hyperkit.pid hyperkit
+    fi
+    echo bye
+}
+trap finish EXIT
+
+
+"$LINUXKIT_ROOT/bin/linuxkit" run \
   hyperkit \
-  -hyperkit "$HYPERKIT_ROOT/bin/hyperkit" "$@" \
+  -hyperkit "$HYPERKIT_ROOT/bin/hyperkit" \
+  -vpnkit "$VPNKIT_ROOT/bin/vpnkit" \
   -networking vpnkit \
   -ip "$CONTAINER_IP" \
   -disk "$DIR/nix-disk,size=$SIZE" \

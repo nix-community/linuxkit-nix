@@ -25,6 +25,9 @@
 , vmTools
 , makeInitrd
 , shellcheck
+, coreutils
+, openssh
+, gnutar
 , linuxkitKernel ? (forceSystem "x86_64-linux" "x86_64").callPackage ./kernel.nix { }
 , storeDir ? builtins.storeDir
 
@@ -130,6 +133,8 @@ let
 
       Exit this VM by running:
           kill $(cat ~/.nixpkgs/linuxkit-builder/nix-state/hyperkit.pid)
+
+      Or, in this terminal, type 'stop'.
       ======================================================================
     '';
 
@@ -243,7 +248,8 @@ let
     ];
   };
 in shellcheckedScriptBin "linuxkit-builder" ./ui.sh {
-  inherit bash hostPort vpnkit hyperkit linuxkit containerIp;
+  inherit bash hostPort vpnkit hyperkit linuxkit containerIp coreutils
+    openssh gnutar;
 
   boot_files = runCommand "linuxkit-kernel-files" {
     kernel_path = "${linuxkitKernel}/${img}";
