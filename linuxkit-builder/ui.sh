@@ -18,9 +18,9 @@ NAME="linuxkit-builder"
 
 DIR="$HOME/.nixpkgs/$NAME"
 FEATURES="big-parallel"
-SIZE="10G"
+SIZE="80G"
 CPUS=1
-MEM=1024
+MEM=4096
 while getopts "d:f:s:c:m:h" opt; do
   case $opt in
     d) DIR="$OPTARG" ;;
