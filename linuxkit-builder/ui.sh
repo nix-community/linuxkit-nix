@@ -11,7 +11,8 @@ LINUXKIT_ROOT=@linuxkit@
 CONTAINER_IP=@containerIp@
 
 usage() {
-  echo "Usage: $(basename "$0") [-d directory] [-f features] [-s size] [-c cpus] [-m mem]" >&2
+    echo "Usage: $(basename "$0") [-v] [-d directory] [-f features] [-s size] [-c cpus] [-m mem]" >&2
+    echo "-v means verbose" >&2
 }
 
 NAME="linuxkit-builder"
@@ -21,13 +22,15 @@ FEATURES="big-parallel"
 SIZE="80G"
 CPUS=1
 MEM=4096
-while getopts "d:f:s:c:m:h" opt; do
+VERBOSE=""
+while getopts "d:f:s:c:m:hv" opt; do
   case $opt in
     d) DIR="$OPTARG" ;;
     f) FEATURES="$OPTARG" ;;
     s) SIZE="$OPTARG" ;;
     c) CPUS="$OPTARG" ;;
     m) MEM="$OPTARG" ;;
+    v) VERBOSE="-v" ;;
     h | \?)
       usage
       exit 64
