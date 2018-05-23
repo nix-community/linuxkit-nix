@@ -9,6 +9,7 @@ self: super: {
   go-vpnkit = self.callPackage ./go-vpnkit { };
   linuxkit = self.callPackage ./linuxkit { };
   linuxkit-builder = self.callPackage ./linuxkit-builder { };
+  nix-linuxkit-runner = (self.callPackage ./nix-linuxkit-runner/Cargo.nix { }).nix_linuxkit_runner {};
 
   nix-script-store-plugin = self.stdenv.mkDerivation {
     name = "nix-script-store-plugin";

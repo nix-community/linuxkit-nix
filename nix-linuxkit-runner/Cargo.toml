@@ -1,0 +1,11 @@
+[package]
+name = "nix-linuxkit-runner"
+version = "0.1.0"
+authors = ["Graham Christensen <graham.christensen@target.com>"]
+
+[dependencies]
+structopt = "0.2"
+
+[dependencies.ctrlc]
+version = "3.1.0"
+features = [ "termination" ]
