@@ -16,6 +16,7 @@
 , hyperkit
 , vpnkit
 , linuxkit
+, nix-linuxkit-runner
 , buildEnv
 , writeScript
 , writeText
@@ -250,6 +251,7 @@ let
 in shellcheckedScriptBin "linuxkit-builder" ./ui.sh {
   inherit bash hostPort vpnkit hyperkit linuxkit containerIp coreutils
     openssh gnutar;
+  nix_linuxkit_runner = nix-linuxkit-runner;
 
   boot_files = runCommand "linuxkit-kernel-files" {
     kernel_path = "${linuxkitKernel}/${img}";

@@ -9,6 +9,7 @@ VPNKIT_ROOT=@vpnkit@
 HYPERKIT_ROOT=@hyperkit@
 LINUXKIT_ROOT=@linuxkit@
 CONTAINER_IP=@containerIp@
+NIX_LINUXKIT_RUNNER=@nix_linuxkit_runner@
 
 usage() {
     echo "Usage: $(basename "$0") [-v] [-d directory] [-f features] [-s size] [-c cpus] [-m mem]" >&2
@@ -19,7 +20,7 @@ NAME="linuxkit-builder"
 
 DIR="$HOME/.nixpkgs/$NAME"
 FEATURES="big-parallel"
-SIZE="80G"
+SIZE="80"
 CPUS=1
 MEM=4096
 VERBOSE=""
@@ -40,18 +41,26 @@ done
 
 mkdir -p "$DIR"
 
-if [ ! -d "$DIR/keys" ]; then
-  mkdir -p "$DIR/keys"
-  (
-    cd "$DIR/keys"
-    ssh-keygen -C "Nix LinuxKit Builder, Client" -N "" -f client
-    ssh-keygen -C "Nix LinuxKit Builder, Server" -f ssh_host_ecdsa_key -N "" -t ecdsa
+if [ ! -d "$DIR/server-config.tar" ]; then
+    (
+        cd "$DIR"
+        rm -rf ./keys
 
-    tar -cf server-config.tar client.pub ssh_host_ecdsa_key.pub ssh_host_ecdsa_key
+        mkdir "$DIR/keys"
+        (
+            cd "$DIR/keys"
+            ssh-keygen -C "Nix LinuxKit Builder, Client" -N "" -f client
+            ssh-keygen -C "Nix LinuxKit Builder, Server" -f ssh_host_ecdsa_key -N "" -t ecdsa
 
-    echo -n "[localhost]:$HOST_PORT " > known_host
-    cat ssh_host_ecdsa_key.pub >> known_host
-  )
+            tar -cf server-config.tar client.pub ssh_host_ecdsa_key.pub ssh_host_ecdsa_key
+
+            echo -n "[localhost]:$HOST_PORT " > known_host
+            cat ssh_host_ecdsa_key.pub >> known_host
+        )
+
+        cd "$DIR"
+        mv ./keys/server-config.tar ./
+    )
 fi
 
 cp "$INTEGRATED_PATH" "$DIR/integrated.sh"
@@ -102,30 +111,18 @@ cat <<-EOF > "$DIR/finish-setup.sh"
 
     script://$DIR/integrated.sh x86_64-linux - $CPUS 1 $FEATURES
 
-
 EOF
 
 chmod +x "$DIR/finish-setup.sh"
 
-function finish {
-    if [ -f "$DIR/nix-state/hyperkit.pid" ]; then
-        # yeah, yeah, /usr/bin
-        /usr/bin/pkill -F ~/.nixpkgs/linuxkit-builder/nix-state/hyperkit.pid hyperkit
-    fi
-    echo bye
-}
-trap finish EXIT
-
-
-"$LINUXKIT_ROOT/bin/linuxkit" run \
-  hyperkit \
-  -hyperkit "$HYPERKIT_ROOT/bin/hyperkit" \
-  -vpnkit "$VPNKIT_ROOT/bin/vpnkit" \
-  -networking vpnkit \
-  -ip "$CONTAINER_IP" \
-  -disk "$DIR/nix-disk,size=$SIZE" \
-  -data-file "$DIR/keys/server-config.tar" \
-  -cpus "$CPUS" \
-  -mem "$MEM" \
-  -state "$DIR/nix-state" \
-  "$BOOT_FILES/nix"
+exec $NIX_LINUXKIT_RUNNER/bin/nix-linuxkit-runner \
+     $VERBOSE \
+     --linuxkit "$LINUXKIT_ROOT/bin/linuxkit" \
+     --hyperkit "$HYPERKIT_ROOT/bin/hyperkit" \
+     --vpnkit "$VPNKIT_ROOT/bin/vpnkit" \
+     --ip "$CONTAINER_IP" \
+     --disk-size "$SIZE" \
+     --state-root "$DIR" \
+     --cpus "$CPUS" \
+     --memory "$MEM" \
+     --kernel-files "$BOOT_FILES/nix"
