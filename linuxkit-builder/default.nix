@@ -255,7 +255,7 @@ in shellcheckedScriptBin "linuxkit-builder" ./ui.sh {
     kernel_path = "${linuxkitKernel}/${img}";
     initrd_path = "${initrd}/initrd";
     kernel_cmdline_path = writeText "nix-cmdline"
-      "console=ttyS0 panic=1 command=${stage2Init} loglevel=7 debug";
+      "console=ttyS0 panic=1 command=${stage2Init} loglevel=7 debug noapic nolapic";
   } ''
     mkdir $out
     cd $out
