@@ -77,9 +77,11 @@ launchctl load ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist
 cp "$EXAMPLE_PATH" "$DIR/example.nix"
 chmod u+w "$DIR/example.nix"
 
+ssh_config_path="$ROOT_HOME/.ssh/nix-linuxkit-ssh-config"
+echo "Setting up $ssh_config_path..."
 sudo mkdir -m 0700 -p "$ROOT_HOME/.ssh"
 
-cat <<EOF | sudo tee "$ROOT_HOME/.ssh/nix-linuxkit-ssh-config" > /dev/null
+cat <<EOF | sudo tee "$ssh_config_path" > /dev/null
 Host nix-linuxkit
    HostName localhost
    User root
@@ -89,11 +91,11 @@ Host nix-linuxkit
    UserKnownHostsFile $DIR/keys/known_host
    IdentitiesOnly yes
 EOF
-sudo chmod 0600 "$ROOT_HOME/.ssh/nix-linuxkit-ssh-config"
+sudo chmod 0600 "$ssh_config_path"
 
-ssh_config_line="Include $ROOT_HOME/.ssh/nix-linuxkit-ssh-config"
+ssh_config_line="Include $ssh_config_path"
 if ! sudo grep -q "$ssh_config_line" "$ROOT_HOME/.ssh/config"; then
-    echo "Adding the SSH configuration ($DIR/ssh-config) to $ROOT_HOME/.ssh/config..."
+    echo "Adding the SSH configuration ($ssh_config_path) to $ROOT_HOME/.ssh/config..."
     sudo ed -s "$ROOT_HOME/.ssh/config" <<EOF
 0a
 $ssh_config_line
