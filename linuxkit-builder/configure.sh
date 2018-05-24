@@ -71,7 +71,8 @@ if [ ! -f "$DIR/server-config.tar" ]; then
     )
 fi
 
-launchctl unload ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist || true
+launchctl unload ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist 2> /dev/null   || true
+chmod 660  ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist || true
 cp "$PLIST" ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist
 launchctl load ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist
 
@@ -95,7 +96,9 @@ EOF
 sudo chmod 0600 "$ssh_config_path"
 
 ssh_config_line="Include $ssh_config_path"
-if ! sudo grep -q "$ssh_config_line" "$ROOT_HOME/.ssh/config"; then
+sudo touch "$ROOT_HOME/.ssh/config"
+sudo chmod 0600 "$ROOT_HOME/.ssh/config"
+if ! sudo grep -q "$ssh_config_line" "$ROOT_HOME/.ssh/config" 2> /dev/null; then
     echo "Adding the SSH configuration ($ssh_config_path) to $ROOT_HOME/.ssh/config..."
     sudo ed -s "$ROOT_HOME/.ssh/config" <<EOF
 0a
@@ -108,7 +111,7 @@ fi
 
 machines_config_prefix="ssh://nix-linuxkit x86_64-linux"
 machines_config_line="$machines_config_prefix $DIR/keys/client $CPUS 1 $FEATURES"
-if ! sudo grep -q "^$machines_config_prefix" "/etc/nix/machines"; then
+if ! sudo grep -q "^$machines_config_prefix" "/etc/nix/machines" 2> /dev/null; then
     echo "Adding the Nix Machines configuration (/etc/nix/machines) to /etc/nix/machines..."
     printf "\\n%s\\n" "$machines_config_line" | sudo tee -a "/etc/nix/machines"
 fi
