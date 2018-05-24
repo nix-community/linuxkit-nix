@@ -104,7 +104,7 @@ fn main() {
     child.stdout(Stdio::inherit());
     child.stderr(Stdio::inherit());
     if options.verbose {
-        child.arg("-verbose");
+        child.arg("-v");
     }
     child.args(&["run", "hyperkit"]);
     child.args(&["-hyperkit", options.hyperkit.to_str().unwrap()]);
