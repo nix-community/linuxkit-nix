@@ -1,62 +1,36 @@
 # linuxkit-builder
 
-## Installation
+## Installation (Development-style)
 
-### With a standard Nix installation, and a simple SSH-based remote
+    nix-build . -A linuxkit-builder
+    ./result/bin/nix-linuxkit-configure
 
-Install the packages into the default profile:
+It'll write to:
 
-    sudo nix-env -f . -p /nix/var/nix/profiles/default -iA linuxkit-builder
+ - ~/.cache/nix-linuxkit-builder/, in particular
+   ~/.cache/nix-linuxkit-builder/nix-state/console-ring is interesting
+ - ~root/.ssh/ for the SSH config
+ - /etc/nix/machines
+ - ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist
 
-As your user, run:
 
-    linuxkit-builder
+It should automatically start and stay running, but ...
 
-Then when it says so, run:
 
-    ~/.nixpkgs/linuxkit-builder/finish-setup.sh
+You can force start it with:
 
-Now you can run builds:
+    launchctl start org.nix-community.linuxkit-builder
 
-    nix-build example.nix
+You can force stop it with:
 
-### With a patched Nix installation and the `script`-based remote
+    launchctl stop org.nix-community.linuxkit-builder
 
-Install the packages into the default profile:
+If after you stop it you may want to check for processes, like:
 
-    sudo nix-env -f . -p /nix/var/nix/profiles/default -iA nixUnstable nix-script-store-plugin linuxkit-builder
+    pgrep vpnkit
+    pgrep linuxkit
+    pgrep hyperkit
 
-Update `/etc/nix/nix.conf` with the plugin:
+If something goes wrong and it didn't stop propery, you can try:
 
-    plugin-files = /nix/var/nix/profiles/default/lib/nix/plugins/libnix-script-store.dylib
-
-Restart nix-daemon:
-
-    sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist
-    sudo launchctl load /Library/LaunchDaemons/org.nixos.nix-daemon.plist
-
-As your user, run:
-
-    linuxkit-builder
-
-Then when it says so, run:
-
-    ~/.nixpkgs/linuxkit-builder/finish-setup.sh
-
-and follow the instructions starting at the end (skipping #1 and #2)
-
-Restart nix-daemon:
-
-    sudo launchctl unload /Library/LaunchDaemons/org.nixos.nix-daemon.plist
-    sudo launchctl load /Library/LaunchDaemons/org.nixos.nix-daemon.plist
-
-Now you can run builds:
-
-    nix-build example.nix
-
-## Stopping the builder
-
-If you've run the builder at the terminal, you can just type `stop` at
-the prompt. Or, you can run:
-
-    kill $(cat ~/.nixpkgs/linuxkit-builder/nix-state/hyperkit.pid)
+    pkill -F ~/.cache/nix-linuxkit-builder/nix-state/hyperkit.pid hyperkit

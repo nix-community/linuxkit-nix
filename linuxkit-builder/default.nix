@@ -29,6 +29,9 @@
 , coreutils
 , openssh
 , gnutar
+, gnugrep
+, ed
+, substituteAll
 , linuxkitKernel ? (forceSystem "x86_64-linux" "x86_64").callPackage ./kernel.nix { }
 , storeDir ? builtins.storeDir
 
@@ -198,44 +201,6 @@ let
 
           exec ${pkgsLinux.go-vpnkit}/bin/vpnkit-forwarder
         '')
-
-        (writeRunitForegroundService "postboot-instructions" ''
-          #!/bin/sh
-
-          sleep 1
-          inst() {
-            echo
-            echo -e '\033[91;47m'
-            cat ${file_instructions}
-            echo -e '\033[0m'
-          }
-
-          inst
-
-          (while read x; do
-            case "$x" in
-              stop)
-                ${script_poweroff}
-                ;;
-              ping)
-                echo "pong"
-                ;;
-              ps)
-                ${pkgsLinux.busybox}/bin/ps auxfg
-                ;;
-              df)
-                ${pkgsLinux.coreutils}/bin/df -ha
-                ;;
-              shell)
-                ${pkgsLinux.bash}/bin/bash 2>&1
-                ;;
-              *)
-                inst
-                echo "I know stop, ping, ps, df, shell"
-                ;;
-            esac
-          done) < /dev/console > /dev/console
-        '')
       ];
     };
   };
@@ -248,24 +213,41 @@ let
       }
     ];
   };
-in shellcheckedScriptBin "linuxkit-builder" ./ui.sh {
-  inherit bash hostPort vpnkit hyperkit linuxkit containerIp coreutils
-    openssh gnutar;
-  nix_linuxkit_runner = nix-linuxkit-runner;
 
-  boot_files = runCommand "linuxkit-kernel-files" {
-    kernel_path = "${linuxkitKernel}/${img}";
-    initrd_path = "${initrd}/initrd";
-    kernel_cmdline_path = writeText "nix-cmdline"
-      "console=ttyS0 panic=1 command=${stage2Init} loglevel=7 debug noapic nolapic";
-  } ''
-    mkdir $out
-    cd $out
+  builderScript = shellcheckedScript "nix-linuxkit-builder" ./ui.sh {
+    inherit bash hostPort vpnkit hyperkit linuxkit containerIp coreutils
+      openssh gnutar;
+    nix_linuxkit_runner = nix-linuxkit-runner;
 
-    ln -fs $kernel_path "./nix-kernel"
-    ln -fs $initrd_path "./nix-initrd.img"
-    ln -fs $kernel_cmdline_path "./nix-cmdline"
-  '';
-  integrated_path = ./integrated.sh;
-  example_path = ./example.nix;
+    boot_files = runCommand "linuxkit-kernel-files" {
+      kernel_path = "${linuxkitKernel}/${img}";
+      initrd_path = "${initrd}/initrd";
+      kernel_cmdline_path = writeText "nix-cmdline"
+        "console=ttyS0 panic=1 command=${stage2Init} loglevel=7 debug noapic nolapic";
+    } ''
+      mkdir $out
+      cd $out
+
+      ln -fs $kernel_path "./nix-kernel"
+      ln -fs $initrd_path "./nix-initrd.img"
+      ln -fs $kernel_cmdline_path "./nix-cmdline"
+    '';
+    integrated_path = ./integrated.sh;
+    example_path = ./example.nix;
+  };
+
+  plist = substituteAll {
+    src = ./daemon.plist;
+    inherit builderScript;
+  };
+
+in buildEnv {
+  name = "linuxkit-builder";
+  paths = [
+    (shellcheckedScriptBin "nix-linuxkit-configure" ./configure.sh {
+      inherit bash hostPort coreutils openssh gnutar gnugrep ed plist;
+      example_path = ./example.nix;
+    })
+
+  ];
 }
