@@ -9,6 +9,7 @@ PLIST=@plist@
 usage() {
     echo "Usage: $(basename "$0") [-v] [-f features] [-s size] [-c cpus] [-m mem]" >&2
     echo "-v means verbose" >&2
+    echo "Multiple features: kvm,big-parallel,my-extra-feature" >&2
 }
 
 # Let's us keep /usr/bin out of the PATH but still use sudo =)
@@ -18,7 +19,7 @@ sudo() {
 
 DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/nix-linuxkit-builder/"
 
-FEATURES="big-parallel"
+FEATURES="kvm,big-parallel"
 SIZE="80"
 CPUS=1
 MEM=4096

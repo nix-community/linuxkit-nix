@@ -102,7 +102,7 @@ let
 
     script_modprobe = writeScript "modeprobe" ''
       #! /bin/sh
-      export MODULE_DIR=${pkgsLinux.linux}/lib/modules/
+      export MODULE_DIR=${linuxkitKernel}/lib/modules/
       exec ${pkgsLinux.kmod}/bin/modprobe "$@"
     '';
 
