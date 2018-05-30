@@ -1,14 +1,17 @@
 #!@bash@/bin/bash -eu
 
-PATH=@coreutils@/bin:@gnugrep@/bin:@openssh@/bin:@gnutar@/bin:@ed@:/bin
+PATH=@nix@/bin:@coreutils@/bin:@gnugrep@/bin:@openssh@/bin:@gnutar@/bin:@ed@:/bin
 HOST_PORT=@hostPort@
 EXAMPLE_PATH=@example_path@
 ROOT_HOME=~root/
 PLIST=@plist@
 
 usage() {
-    echo "Usage: $(basename "$0") [-v] [-f features] [-s size] [-c cpus] [-m mem]" >&2
-    echo "-v means verbose" >&2
+    echo "Usage: $(basename "$0") [-q] [-v] [-f features] [-s size] [-c cpus] [-m mem]" >&2
+    echo "" >&2
+    echo "    -v    verbose" >&2
+    echo "    -q    quiet" >&2
+    echo "" >&2
     echo "Multiple features: kvm,big-parallel,my-extra-feature" >&2
 }
 
@@ -24,7 +27,8 @@ SIZE="80"
 CPUS=1
 MEM=4096
 VERBOSE=""
-while getopts "d:f:s:c:m:hv" opt; do
+QUIET=0
+while getopts "d:f:s:c:m:hvq" opt; do
   case $opt in
     d) DIR="$OPTARG" ;;
     f) FEATURES="$OPTARG" ;;
@@ -32,6 +36,7 @@ while getopts "d:f:s:c:m:hv" opt; do
     c) CPUS="$OPTARG" ;;
     m) MEM="$OPTARG" ;;
     v) VERBOSE="-v" ;;
+    q) QUIET=1 ;;
     h | \?)
       usage
       exit 64
@@ -116,8 +121,10 @@ if ! sudo grep -q "^$machines_config_prefix" "/etc/nix/machines" 2> /dev/null; t
     printf "\\n%s\\n" "$machines_config_line" | sudo tee -a "/etc/nix/machines"
 fi
 
-echo "Ok, try it out!"
-echo ""
-echo "    nix-build $DIR/example.nix"
-echo ""
-echo "If this doesn't work right away, maybe wait a 10+ seconds and try again."
+if [ $QUIET -eq 0 ]; then
+    echo "Ok, try it out!"
+    echo ""
+    echo "    nix-build $DIR/example.nix"
+    echo ""
+    echo "If this doesn't work right away, maybe wait a 10+ seconds and try again."
+fi
