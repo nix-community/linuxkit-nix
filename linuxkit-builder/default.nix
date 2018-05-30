@@ -245,7 +245,7 @@ in buildEnv {
   name = "linuxkit-builder";
   paths = [
     (shellcheckedScriptBin "nix-linuxkit-configure" ./configure.sh {
-      inherit bash hostPort coreutils openssh gnutar gnugrep ed plist;
+      inherit bash hostPort coreutils openssh gnutar gnugrep ed plist nix;
       example_path = ./example.nix;
     })
 

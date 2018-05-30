@@ -76,6 +76,9 @@ if [ ! -f "$DIR/server-config.tar" ]; then
     )
 fi
 
+
+nix-store --add-root "$DIR/gcroot" --indirect --realize "$PLIST"
+
 launchctl unload ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist 2> /dev/null   || true
 chmod 660  ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist 2> /dev/null || true
 cp "$PLIST" ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist
