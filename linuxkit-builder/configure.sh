@@ -20,7 +20,7 @@ sudo() {
     /usr/bin/sudo "$@"
 }
 
-DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/nix-linuxkit-builder/"
+DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/nix-linuxkit-builder"
 
 FEATURES="kvm,big-parallel"
 SIZE="80"
