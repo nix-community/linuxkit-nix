@@ -97,7 +97,7 @@ let
   '';
 
   stage2Init = shellcheckedScript "vm-run-stage2" ./stage-2.sh rec {
-    inherit (pkgsLinux) coreutils busybox bash runit;
+    inherit (pkgsLinux) busybox runit;
     inherit storeDir containerIp;
 
     script_modprobe = writeScript "modeprobe" ''
@@ -106,10 +106,15 @@ let
       exec ${pkgsLinux.kmod}/bin/modprobe "$@"
     '';
 
-    file_passwd = writeText "passwd" ''
-      root:x:0:0:System administrator:/root:${pkgsLinux.bash}/bin/bash
-      sshd:x:1:65534:SSH privilege separation user:/var/empty:${pkgsLinux.shadow}/bin/nologin
-      nixbld1:x:30001:30000:Nix build user 1:/var/empty:${pkgsLinux.shadow}/bin/nologin
+    file_passwd = let
+      wrapped_shell = writeScript "busybox-sh-wrapper" ''
+        #!${pkgsLinux.busybox}/bin/sh
+        exec ${pkgsLinux.busybox}/bin/sh -l
+      '';
+    in writeText "passwd" ''
+      root:x:0:0:System administrator:/root:${wrapped_shell}
+      sshd:x:1:65534:SSH privilege separation user:/var/empty:${pkgsLinux.busybox}/bin/false
+      nixbld1:x:30001:30000:Nix build user 1:/var/empty:${pkgsLinux.busybox}/bin/false
     '';
 
     file_group = writeText "group" ''

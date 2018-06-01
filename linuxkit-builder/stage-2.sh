@@ -1,7 +1,7 @@
-#! @bash@/bin/bash -eu
+#! @busybox@/bin/sh -eu
 
-export PATH=@coreutils@/bin:@busybox@/bin
-export SH_PATH=@bash@/bin/sh
+export PATH=@busybox@/bin
+export SH_PATH=@busybox@/bin/sh
 export RUNIT_PATH=@runit@/bin/runit
 export MODPROBE_PATH=@script_modprobe@
 export PASSWD_PATH=@file_passwd@
@@ -32,7 +32,8 @@ mkdir -p /etc/ssh /root /var/db /var/empty
 chown root:root /root
 chmod 0700 /root
 
-cat $BASHRC_PATH > /root/.bashrc
+cat $BASHRC_PATH > /etc/profile
+chmod 0555 /etc/profile
 # Note: I try not to reference substituted variables in the body of
 # the program because I think it is confusing, and easier to
 # understand by declaring them all at the top. However, shellcheck can
