@@ -109,7 +109,7 @@ let
     file_passwd = let
       wrapped_shell = writeScript "busybox-sh-wrapper" ''
         #!${pkgsLinux.busybox}/bin/sh
-        exec ${pkgsLinux.busybox}/bin/sh -l
+        exec ${pkgsLinux.busybox}/bin/sh -l "$@"
       '';
     in writeText "passwd" ''
       root:x:0:0:System administrator:/root:${wrapped_shell}
