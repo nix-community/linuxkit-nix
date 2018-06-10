@@ -32,7 +32,7 @@
 , gnugrep
 , ed
 , substituteAll
-, linuxkitKernel ? (forceSystem "x86_64-linux" "x86_64").callPackage ./kernel.nix { }
+, linuxkitKernel ? ((forceSystem "x86_64-linux" "x86_64").callPackage ./kernel.nix { }).overrideAttrs (oldAttrs: { requiredSystemFeatures = [ ];  })
 , storeDir ? builtins.storeDir
 
 , hostPort ? "24083"
