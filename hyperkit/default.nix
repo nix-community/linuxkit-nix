@@ -37,5 +37,6 @@ stdenv.mkDerivation rec {
     homepage = "https://github.com/moby/hyperkit";
     maintainers = [ lib.maintainers.puffnfresh ];
     platforms = lib.platforms.darwin;
+    license = lib.licenses.bsd3;
   };
 }
