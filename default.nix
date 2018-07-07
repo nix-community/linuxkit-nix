@@ -1,2 +1,2 @@
-{ pkgs ? import <nixpkgs> { system = "x86_64-darwin"; } }:
+{ pkgs ? import <nixpkgs> { localSystem.system = "x86_64-darwin"; } }:
 (import pkgs.path { overlays = [ (import ./overlay.nix) ]; })
