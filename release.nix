@@ -1,1 +1,1 @@
-{ inherit (import ./default.nix) linuxkit-builder; }
+{ inherit (import ./default.nix {}) linuxkit-builder; }
