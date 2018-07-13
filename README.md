@@ -1,10 +1,13 @@
 # linuxkit-builder
 
-## Installation (Development-style)
+## Installation
 
-    nix-build . -A linuxkit-builder
-    ./result/bin/nix-linuxkit-configure
+Fetch it from the NixOS binary cache:
 
+    nix-store -r /nix/store/1f5zgx8qykz2fxzhqphmsfp6cvpnfc94-linuxkit-builder
+    nix-env -i /nix/store/1f5zgx8qykz2fxzhqphmsfp6cvpnfc94-linuxkit-builder
+    nix-linuxkit-configure
+    
 It'll write to:
 
  - ~/.cache/nix-linuxkit-builder/, in particular
