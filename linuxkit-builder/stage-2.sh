@@ -49,6 +49,7 @@ ls -la /nix/var/nix/db || true
 
 if [ -f /nix-path-registration ]; then
   nix-store --load-db < /nix-path-registration
+  nix-store --verify --check-contents
   rm /nix-path-registration
 fi
 
