@@ -34,6 +34,6 @@ If after you stop it you may want to check for processes, like:
     pgrep linuxkit
     pgrep hyperkit
 
-If something goes wrong and it didn't stop propery, you can try:
+If something goes wrong and it didn't stop properly, you can try:
 
     pkill -F ~/.cache/nix-linuxkit-builder/nix-state/hyperkit.pid hyperkit
