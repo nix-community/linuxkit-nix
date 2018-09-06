@@ -1,7 +1,7 @@
 { stdenv, fetchurl, linux_4_9, linuxManualConfig, hostPlatform }:
 
 linuxManualConfig {
-  inherit stdenv hostPlatform;
+  inherit stdenv;
   inherit (linux_4_9) src;
   version = "${linux_4_9.version}-linuxkit";
   configfile = fetchurl {
