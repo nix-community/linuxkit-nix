@@ -22,7 +22,6 @@
 , writeText
 , writeTextFile
 , runCommand
-, forceSystem
 , vmTools
 , makeInitrd
 , shellcheck
@@ -32,7 +31,8 @@
 , gnugrep
 , ed
 , substituteAll
-, linuxkitKernel ? (forceSystem "x86_64-linux" "x86_64").callPackage ./kernel.nix { }
+, pkgsForLinux
+, linuxkitKernel ? pkgsForLinux.callPackage ./kernel.nix { }
 , storeDir ? builtins.storeDir
 
 , hostPort ? "24083"
@@ -66,8 +66,7 @@ let
     mv '${name}' $out
   '';
 
-  pkgsLinux = forceSystem "x86_64-linux" "x86_64";
-  vmToolsLinux = vmTools.override { kernel = linuxkitKernel; pkgs = pkgsLinux; };
+  vmToolsLinux = vmTools.override { kernel = linuxkitKernel; pkgs = pkgsForLinux; };
   containerIp = "192.168.65.2";
 
   hd = "sda";
@@ -84,7 +83,7 @@ let
   stage1Init = shellcheckedScript "vm-run-stage1" ./stage-1.sh {
     inherit (vmToolsLinux) initrdUtils;
     inherit (vmToolsLinux) modulesClosure;
-    inherit (pkgsLinux) e2fsprogs;
+    inherit (pkgsForLinux) e2fsprogs;
     inherit hd stage2Init;
     systemTarballPath = "${systemTarball}/tarball/nixos-system-${system}.tar.xz";
   };
@@ -97,24 +96,24 @@ let
   '';
 
   stage2Init = shellcheckedScript "vm-run-stage2" ./stage-2.sh rec {
-    inherit (pkgsLinux) busybox runit;
+    inherit (pkgsForLinux) busybox runit;
     inherit storeDir containerIp;
 
     script_modprobe = writeScript "modeprobe" ''
       #! /bin/sh
       export MODULE_DIR=${linuxkitKernel}/lib/modules/
-      exec ${pkgsLinux.kmod}/bin/modprobe "$@"
+      exec ${pkgsForLinux.kmod}/bin/modprobe "$@"
     '';
 
     file_passwd = let
       wrapped_shell = writeScript "busybox-sh-wrapper" ''
-        #!${pkgsLinux.busybox}/bin/sh
-        exec ${pkgsLinux.busybox}/bin/sh -l "$@"
+        #!${pkgsForLinux.busybox}/bin/sh
+        exec ${pkgsForLinux.busybox}/bin/sh -l "$@"
       '';
     in writeText "passwd" ''
       root:x:0:0:System administrator:/root:${wrapped_shell}
-      sshd:x:1:65534:SSH privilege separation user:/var/empty:${pkgsLinux.busybox}/bin/false
-      nixbld1:x:30001:30000:Nix build user 1:/var/empty:${pkgsLinux.busybox}/bin/false
+      sshd:x:1:65534:SSH privilege separation user:/var/empty:${pkgsForLinux.busybox}/bin/false
+      nixbld1:x:30001:30000:Nix build user 1:/var/empty:${pkgsForLinux.busybox}/bin/false
     '';
 
     file_group = writeText "group" ''
@@ -123,13 +122,13 @@ let
     '';
 
     file_bashrc = writeScript "bashrc" ''
-      export PATH="${vmToolsLinux.initrdUtils}/bin:${pkgsLinux.nix}/bin"
-      export NIX_SSL_CERT_FILE='${pkgsLinux.cacert}/etc/ssl/certs/ca-bundle.crt'
+      export PATH="${vmToolsLinux.initrdUtils}/bin:${pkgsForLinux.nix}/bin"
+      export NIX_SSL_CERT_FILE='${pkgsForLinux.cacert}/etc/ssl/certs/ca-bundle.crt'
     '';
 
     script_poweroff = writeScript "poweroff" ''
       #!/bin/sh
-      exec ${pkgsLinux.busybox}/bin/poweroff -f
+      exec ${pkgsForLinux.busybox}/bin/poweroff -f
     '';
 
     file_instructions = writeText "instructions" ''
@@ -165,7 +164,7 @@ let
 
           cat /proc/uptime
           echo "Running services in ${service_targets}..."
-          exec ${pkgsLinux.runit}/bin/runsvdir -P ${service_targets}
+          exec ${pkgsForLinux.runit}/bin/runsvdir -P ${service_targets}
         '')
 
         # Shutdown
@@ -181,18 +180,18 @@ let
       paths = [
         (writeRunitForegroundService "acpid" ''
           #!/bin/sh
-          exec ${pkgsLinux.busybox}/bin/acpid -f
+          exec ${pkgsForLinux.busybox}/bin/acpid -f
         '')
 
         (writeRunitForegroundService "sshd" ''
           #!/bin/sh
-          exec ${pkgsLinux.openssh}/bin/sshd -D -e -f ${sshdConfig}
+          exec ${pkgsForLinux.openssh}/bin/sshd -D -e -f ${sshdConfig}
         '')
 
         (writeRunitForegroundService "vpnkit-expose-port" ''
           #!/bin/sh
 
-          ${pkgsLinux.go-vpnkit}/bin/vpnkit-expose-port \
+          ${pkgsForLinux.go-vpnkit}/bin/vpnkit-expose-port \
             -i \
             -host-ip 127.0.0.1 -host-port ${hostPort} \
             -container-ip 192.168.65.2 -container-port 22 \
@@ -204,7 +203,7 @@ let
         (writeRunitForegroundService "vpnkit-forwarder" ''
           #!/bin/sh
 
-          exec ${pkgsLinux.go-vpnkit}/bin/vpnkit-forwarder
+          exec ${pkgsForLinux.go-vpnkit}/bin/vpnkit-forwarder
         '')
       ];
     };

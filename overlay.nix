@@ -1,4 +1,9 @@
 self: super: {
+  pkgsForLinux = import self.path {
+    system = "x86_64-linux";
+    overlays = [ (import ./overlay.nix) ];
+  };
+
   hyperkit = self.callPackage ./hyperkit {
     inherit (self.darwin.apple_sdk.frameworks) Hypervisor vmnet;
     inherit (self.darwin.apple_sdk.libs) xpc;
