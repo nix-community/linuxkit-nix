@@ -36,7 +36,7 @@ fi
     echo "VERBOSE=$VERBOSE"
 ) >&2
 
-exec $NIX_LINUXKIT_RUNNER/bin/nix_linuxkit_runner \
+exec $NIX_LINUXKIT_RUNNER/bin/nix-linuxkit-runner \
      $VERBOSE \
      --linuxkit "$LINUXKIT_ROOT/bin/linuxkit" \
      --hyperkit "$HYPERKIT_ROOT/bin/hyperkit" \
