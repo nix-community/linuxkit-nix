@@ -4,7 +4,7 @@
 
 Fetch it from the NixOS binary cache:
 
-    nix-env -i /nix/store/1f5zgx8qykz2fxzhqphmsfp6cvpnfc94-linuxkit-builder
+    nix-env -i /nix/store/v4i5gx94r2qxs91mfy8sz4mmnigzravy-linuxkit-builder
     nix-linuxkit-configure
     
 It'll write to:
