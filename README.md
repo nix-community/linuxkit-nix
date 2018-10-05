@@ -1,4 +1,10 @@
-# linuxkit-builder
+# LinuxKit Nix - Linux Nix VM
+
+LinuxKit Nix makes it easy to build Linux binaries from a macOS machine using
+Nix. It's installing a VM using the native virtualization
+(Hypervisor.Framework) so it's quite liteweight compared to installing
+VirtualBox. The project also comes with an installation script that configures
+Nix to use the VM as a remote builder automatically.
 
 ## Installation
 
