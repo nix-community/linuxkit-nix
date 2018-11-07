@@ -14,6 +14,10 @@ self: pkgs: {
   go-vpnkit = pkgs.callPackage ./go-vpnkit { };
   linuxkit = pkgs.callPackage ./linuxkit { };
   linuxkit-builder = pkgs.callPackage ./linuxkit-builder { };
-  nix-linuxkit-runner = (pkgs.callPackage ./nix-linuxkit-runner/Cargo.nix { }).nix_linuxkit_runner {};
+
+  nix-linuxkit-runner = pkgs.callPackage ./nix-linuxkit-runner {
+    inherit (pkgs.darwin.apple_sdk.frameworks) Security;
+  };
+
   nix-script-store-plugin = pkgs.callPackage ./nix-script-store-plugin { };
 }
