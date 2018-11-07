@@ -19,7 +19,7 @@ self: super: {
   nix-script-store-plugin = self.stdenv.mkDerivation {
     name = "nix-script-store-plugin";
     nativeBuildInputs = [ self.pkgconfig self.cmake ];
-    buildInputs = [ self.nix ];
+    buildInputs = [ self.boost self.nix ];
     src = self.fetchFromGitHub {
       owner = "puffnfresh";
       repo = "nix-script-store-plugin";
