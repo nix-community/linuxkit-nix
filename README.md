@@ -14,7 +14,7 @@ This project depends on Nix and a nixpkgs channel >= 18.03.
 
 Fetch it from the NixOS binary cache:
 
-    nix-env -i /nix/store/v4i5gx94r2qxs91mfy8sz4mmnigzravy-linuxkit-builder
+    nix-env -i /nix/store/jgq3savsyyrpsxvjlrz41nx09z7r0lch-linuxkit-builder
     nix-linuxkit-configure
     
 It'll write to:
