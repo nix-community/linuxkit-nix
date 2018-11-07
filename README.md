@@ -6,6 +6,10 @@ Nix. It's installing a VM using the native virtualization
 VirtualBox. The project also comes with an installation script that configures
 Nix to use the VM as a remote builder automatically.
 
+## Requirements
+
+This project depends on Nix and a nixpkgs channel >= 18.03.
+
 ## Installation
 
 Fetch it from the NixOS binary cache:
