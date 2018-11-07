@@ -1,4 +1,4 @@
-# LinuxKit Nix - Linux Nix VM
+# LinuxKit Nix - Linux on Mac Nix builder
 
 LinuxKit Nix makes it easy to build Linux binaries from a macOS machine using
 Nix. It's installing a VM using the native virtualization
