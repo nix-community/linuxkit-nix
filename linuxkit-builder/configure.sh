@@ -79,6 +79,7 @@ fi
 
 nix-store --add-root "$DIR/gcroot" --indirect --realize "$PLIST"
 
+mkdir -p ~/Library/LaunchAgents
 launchctl unload ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist 2> /dev/null   || true
 chmod 0640  ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist 2> /dev/null || true
 cp "$PLIST" ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist
