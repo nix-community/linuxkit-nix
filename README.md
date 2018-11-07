@@ -25,9 +25,15 @@ It'll write to:
  - /etc/nix/machines
  - ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist
 
+Once installed the daemon should automatically start and stay running.
 
-It should automatically start and stay running, but ...
+## Debugging
 
+To see if the daemon is running execute the following command and look at the
+first column. If it has a number (PID) it's running, if it's `-` then it's
+stopped:
+
+    lauchctl list | grep linuxkit
 
 You can force start it with:
 
@@ -46,3 +52,17 @@ If after you stop it you may want to check for processes, like:
 If something goes wrong and it didn't stop properly, you can try:
 
     pkill -F ~/.cache/nix-linuxkit-builder/nix-state/hyperkit.pid hyperkit
+
+## Known potential issues
+
+### `error: 'x86_64-linux' is require to build ...`
+
+Check the `/etc/nix/nix.conf` file for a `builders` option. It should either
+be set to `@/etc/nix/machines` or not set at all for LinuxKit Nix to work
+properly.
+
+### `cannot build on 'ssh://nix-linuxkit': cannot connect ...: Operation timed out`
+
+Something is wrong with LinuxKit. See the debugging section to try things out.
+
+Leave an issue at https://github.com/nix-community/linuxkit-nix/issues
