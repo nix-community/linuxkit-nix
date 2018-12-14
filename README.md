@@ -33,7 +33,7 @@ To see if the daemon is running execute the following command and look at the
 first column. If it has a number (PID) it's running, if it's `-` then it's
 stopped:
 
-    lauchctl list | grep linuxkit
+    launchctl list | grep linuxkit
 
 You can force start it with:
 
