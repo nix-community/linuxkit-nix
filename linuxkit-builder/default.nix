@@ -8,6 +8,7 @@
 
 { system
 , stdenv
+, path
 , perl
 , pixz
 , bash
@@ -70,7 +71,7 @@ let
   containerIp = "192.168.65.2";
 
   hd = "sda";
-  systemTarball = import <nixpkgs/nixos/lib/make-system-tarball.nix> {
+  systemTarball = import "${toString path}/nixos/lib/make-system-tarball.nix" {
     inherit stdenv perl pixz pathsFromGraph;
     contents = [];
     storeContents = [
