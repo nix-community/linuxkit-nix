@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, Hypervisor, vmnet, xpc, libobjc }:
+{ stdenv, lib, fetchFromGitHub, Hypervisor, vmnet, SystemConfiguration, xpc, libobjc }:
 
 let
   # Make sure to keep those in sync
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
     sha256 = "0c8fp03b65kk2lnjvg3fbcrnvxryy4f487l5l9r38r3j39aryzc2";
   };
 
-  buildInputs = [ Hypervisor vmnet xpc libobjc ];
+  buildInputs = [ Hypervisor vmnet SystemConfiguration xpc libobjc ];
 
   # Don't use git to determine version
   prePatch = ''
