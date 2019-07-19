@@ -19,5 +19,7 @@ self: pkgs: {
     inherit (pkgs.darwin.apple_sdk.frameworks) Security;
   };
 
-  nix-script-store-plugin = pkgs.callPackage ./nix-script-store-plugin { };
+  nix-script-store-plugin = pkgs.callPackage ./nix-script-store-plugin {
+    stdenv = with pkgs; if stdenv.cc.isClang then llvmPackages_6.stdenv else stdenv;
+  };
 }
