@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, Hypervisor, vmnet, SystemConfiguration, xpc, libobjc }:
+{ stdenv, lib, fetchFromGitHub, Hypervisor, vmnet, SystemConfiguration, xpc, libobjc, dtrace }:
 
 let
   # Make sure to keep those in sync
@@ -15,7 +15,7 @@ stdenv.mkDerivation rec {
     sha256 = "0c8fp03b65kk2lnjvg3fbcrnvxryy4f487l5l9r38r3j39aryzc2";
   };
 
-  buildInputs = [ Hypervisor vmnet SystemConfiguration xpc libobjc ];
+  buildInputs = [ Hypervisor vmnet SystemConfiguration xpc libobjc dtrace ];
 
   # Don't use git to determine version
   prePatch = ''
@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
       --replace 'shell git describe --abbrev=6 --dirty --always --tags' "$version" \
       --replace 'shell git rev-parse HEAD' "${rev}" \
       --replace 'PHONY: clean' 'PHONY:'
-    cp ${./dtrace.h} src/include/xhyve/dtrace.h
+    make src/include/xhyve/dtrace.h
   '';
 
   makeFlags = [ "CFLAGS+=-Wno-shift-sign-overflow" ''CFLAGS+=-DVERSION=\"${version}\"'' ''CFLAGS+=-DVERSION_SHA1=\"${version}\"'' ];
