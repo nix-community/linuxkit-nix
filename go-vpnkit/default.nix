@@ -1,8 +1,8 @@
 { stdenv, lib, buildGoPackage, fetchFromGitHub }:
 
 buildGoPackage rec {
-  name = "vpnkit-unstable-${version}";
-  version = "0.2.0";
+  name = "vpnkit-${version}";
+  version = "0.3.0";
 
   goPackagePath = "github.com/moby/vpnkit";
 
@@ -10,20 +10,13 @@ buildGoPackage rec {
     owner = "moby";
     repo = "vpnkit";
     rev = "v${version}";
-    sha256 = "0m2s58gcjhfxlxj6b4whaisy1m6vwmhslrfvsm5ll0npry0narkb";
+    sha256 = "04p6agsky1iyx2gd828vscyjsnfsmhpxj8g3v5654v8nznvd3r3i";
   };
-
-  postInstall = ''
-    ln -s $bin/bin/vpnkit-forwarder $bin/bin/vpnkit-expose-port
-  '';
-
-  # adds the unvendored github.com/google/uuid package
-  goDeps = ./deps.nix;
 
   meta = {
     description = "Client commands for VPNKit";
     homepage = "https://github.com/moby/vpnkit";
     maintainers = [ lib.maintainers.puffnfresh ];
-    platforms = lib.platforms.linux;
+    platforms = lib.platforms.unix;
   };
 }
