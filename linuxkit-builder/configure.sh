@@ -3,7 +3,11 @@
 PATH=@nix@/bin:@coreutils@/bin:@gnugrep@/bin:@openssh@/bin:@gnutar@/bin:@ed@:/bin
 HOST_PORT=@hostPort@
 EXAMPLE_PATH=@example_path@
-ROOT_HOME=~root/
+if [ $NIX_REMOTE = daemon ]; then
+  HOME_TARGET=~root/
+else
+  HOME_TARGET=~/
+fi
 PLIST=@plist@
 
 usage() {
@@ -17,7 +21,11 @@ usage() {
 
 # Let's us keep /usr/bin out of the PATH but still use sudo =)
 sudo() {
-    /usr/bin/sudo "$@"
+    if [ $NIX_REMOTE = daemon ]; then
+      /usr/bin/sudo "$@"
+    else
+      "$@"
+    fi
 }
 
 DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/nix-linuxkit-builder"
@@ -89,9 +97,9 @@ launchctl load ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist
 cp "$EXAMPLE_PATH" "$DIR/example.nix"
 chmod u+w "$DIR/example.nix"
 
-ssh_config_path="$ROOT_HOME/.ssh/nix-linuxkit-ssh-config"
+ssh_config_path="$HOME_TARGET/.ssh/nix-linuxkit-ssh-config"
 echo "Setting up $ssh_config_path..."
-sudo mkdir -m 0700 -p "$ROOT_HOME/.ssh"
+sudo mkdir -m 0700 -p "$HOME_TARGET/.ssh"
 
 cat <<EOF | sudo tee "$ssh_config_path" > /dev/null
 Host nix-linuxkit
@@ -106,11 +114,11 @@ EOF
 sudo chmod 0600 "$ssh_config_path"
 
 ssh_config_line="Include $ssh_config_path"
-sudo touch "$ROOT_HOME/.ssh/config"
-sudo chmod 0600 "$ROOT_HOME/.ssh/config"
-if ! sudo grep -q "$ssh_config_line" "$ROOT_HOME/.ssh/config" 2> /dev/null; then
-    echo "Adding the SSH configuration ($ssh_config_path) to $ROOT_HOME/.ssh/config..."
-    sudo ed -s "$ROOT_HOME/.ssh/config" <<EOF
+sudo touch "$HOME_TARGET/.ssh/config"
+sudo chmod 0600 "$HOME_TARGET/.ssh/config"
+if ! sudo grep -q "$ssh_config_line" "$HOME_TARGET/.ssh/config" 2> /dev/null; then
+    echo "Adding the SSH configuration ($ssh_config_path) to $HOME_TARGET/.ssh/config..."
+    sudo ed -s "$HOME_TARGET/.ssh/config" <<EOF
 0a
 $ssh_config_line
 .
