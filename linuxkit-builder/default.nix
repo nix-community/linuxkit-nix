@@ -9,11 +9,10 @@
 { system
 , stdenv
 , path
-, perl
 , pixz
 , bash
 , nix
-, pathsFromGraph
+, closureInfo
 , hyperkit
 , vpnkit
 , linuxkit
@@ -72,7 +71,7 @@ let
 
   hd = "sda";
   systemTarball = import "${toString path}/nixos/lib/make-system-tarball.nix" {
-    inherit stdenv perl pixz pathsFromGraph;
+    inherit stdenv closureInfo pixz;
     contents = [];
     storeContents = [
       {

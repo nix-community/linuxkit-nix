@@ -1,21 +1,21 @@
-{ stdenv, lib, fetchFromGitHub, Hypervisor, vmnet, xpc, libobjc }:
+{ stdenv, lib, fetchFromGitHub, Hypervisor, vmnet, SystemConfiguration, xpc, libobjc, dtrace }:
 
 let
-  rev = "6f6edf716b893544c9e0ef3032459180560f0333";
+  # Make sure to keep those in sync
+  version = "0.20180403";
+  rev = "06c3cf7ec253534b2d81f61ee3c85c5c9aafa4ee";
 in
 stdenv.mkDerivation rec {
   name    = "hyperkit-${version}";
-  # HyperKit release binary uses 6 characters in the version
-  version = lib.strings.substring 0 6 rev;
 
   src = fetchFromGitHub {
     owner = "moby";
     repo = "hyperkit";
     inherit rev;
-    sha256 = "1vpha4dmal3alw76xfvwj7k0qf5gsb5rz821z5j5a3silqjhihcy";
+    sha256 = "0c8fp03b65kk2lnjvg3fbcrnvxryy4f487l5l9r38r3j39aryzc2";
   };
 
-  buildInputs = [ Hypervisor vmnet xpc libobjc ];
+  buildInputs = [ Hypervisor vmnet SystemConfiguration xpc libobjc dtrace ];
 
   # Don't use git to determine version
   prePatch = ''
@@ -23,10 +23,10 @@ stdenv.mkDerivation rec {
       --replace 'shell git describe --abbrev=6 --dirty --always --tags' "$version" \
       --replace 'shell git rev-parse HEAD' "${rev}" \
       --replace 'PHONY: clean' 'PHONY:'
-    cp ${./dtrace.h} src/include/xhyve/dtrace.h
+    make src/include/xhyve/dtrace.h
   '';
 
-  makeFlags = [ "CFLAGS+=-Wno-shift-sign-overflow" ''CFLAGS+=-DVERSION=\"${version}\"'' ''CFLAGS+=-DVERSION_SHA1=\"${rev}\"'' ];
+  makeFlags = [ "CFLAGS+=-Wno-shift-sign-overflow" ''CFLAGS+=-DVERSION=\"${version}\"'' ''CFLAGS+=-DVERSION_SHA1=\"${version}\"'' ];
   installPhase = ''
     mkdir -p $out/bin
     cp build/hyperkit $out/bin
