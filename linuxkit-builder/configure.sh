@@ -3,7 +3,7 @@
 PATH=@nix@/bin:@coreutils@/bin:@gnugrep@/bin:@openssh@/bin:@gnutar@/bin:@ed@:/bin
 HOST_PORT=@hostPort@
 EXAMPLE_PATH=@example_path@
-if [ $NIX_REMOTE = daemon ]; then
+if [ "$NIX_REMOTE" = daemon ]; then
   HOME_TARGET=~root/
 else
   HOME_TARGET=~/
@@ -21,7 +21,7 @@ usage() {
 
 # Let's us keep /usr/bin out of the PATH but still use sudo =)
 sudo() {
-    if [ $NIX_REMOTE = daemon ]; then
+    if [ "$NIX_REMOTE" = daemon ]; then
       /usr/bin/sudo "$@"
     else
       "$@"
