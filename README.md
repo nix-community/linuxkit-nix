@@ -1,5 +1,7 @@
 # LinuxKit Nix - Linux on Mac Nix builder
 
+[hydra jobset](https://hydra.nixos.org/jobset/linux-on-mac-builder/master)
+
 LinuxKit Nix makes it easy to build Linux binaries from a macOS machine using
 Nix. It's installing a VM using the native virtualization
 (Hypervisor.Framework) so it's quite liteweight compared to installing
