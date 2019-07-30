@@ -26,7 +26,12 @@ stdenv.mkDerivation rec {
     make src/include/xhyve/dtrace.h
   '';
 
-  makeFlags = [ "CFLAGS+=-Wno-shift-sign-overflow" ''CFLAGS+=-DVERSION=\"${version}\"'' ''CFLAGS+=-DVERSION_SHA1=\"${version}\"'' ];
+  makeFlags = [
+   "CFLAGS+=-Wno-shift-sign-overflow"
+   ''CFLAGS+=-DVERSION=\"${version}\"''
+   ''CFLAGS+=-DVERSION_SHA1=\"${rev}\"''
+  ];
+
   installPhase = ''
     mkdir -p $out/bin
     cp build/hyperkit $out/bin
