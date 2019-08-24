@@ -63,6 +63,9 @@ Check the `/etc/nix/nix.conf` file for a `builders` option. It should either
 be set to `@/etc/nix/machines` or not set at all for LinuxKit Nix to work
 properly.
 
+Another solution is to set `export NIX_REMOTE_SYSTEMS=/etc/nix/machines`
+before running the nix or nixops command.
+
 ### `cannot build on 'ssh://nix-linuxkit': cannot connect ...: Operation timed out`
 
 Something is wrong with LinuxKit. See the debugging section to try things out.
