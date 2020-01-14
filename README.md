@@ -77,3 +77,25 @@ before running the nix or nixops command.
 Something is wrong with LinuxKit. See the debugging section to try things out.
 
 Leave an issue at https://github.com/nix-community/linuxkit-nix/issues
+
+## Uninstalling
+
+```sh
+# Remove configuration
+rm -rf ~/.cache/nix-linuxkit-builder/
+
+# Remove build machine
+# (edit manually if you have other configuration here)
+sudo rm -f /etc/nix/machines
+
+# Remove LaunchAgent
+launchctl stop org.nix-community.linuxkit-builder
+rm -f ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist
+
+# Remove SSH config
+# (edit manually if you have other configuration here)
+sudo rm -rf /var/root/.ssh
+
+# Uninstall Nix package
+nix-env -e linuxkit-builder
+```
