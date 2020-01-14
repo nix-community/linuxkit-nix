@@ -55,7 +55,13 @@ If something goes wrong and it didn't stop properly, you can try:
 
     pkill -F ~/.cache/nix-linuxkit-builder/nix-state/hyperkit.pid hyperkit
 
-## Known potential issues
+## Troubleshooting
+
+### `cannot build on 'ssh://nix-linuxkit': cannot connect to 'nix-linuxkit' ...`
+
+When runninng `nix-linuxkit-configure`, an SSH config is created at
+`/var/root/.ssh/nix-linuxkit-ssh-config`. Copy the contents of that SSH config
+into your regular SSH config located at `~/.ssh/config`.
 
 ### `error: 'x86_64-linux' is require to build ...`
 
