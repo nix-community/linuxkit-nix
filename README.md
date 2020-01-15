@@ -55,7 +55,13 @@ If something goes wrong and it didn't stop properly, you can try:
 
     pkill -F ~/.cache/nix-linuxkit-builder/nix-state/hyperkit.pid hyperkit
 
-## Known potential issues
+## Troubleshooting
+
+### `cannot build on 'ssh://nix-linuxkit': cannot connect to 'nix-linuxkit' ...`
+
+When runninng `nix-linuxkit-configure`, an SSH config is created at
+`/var/root/.ssh/nix-linuxkit-ssh-config`. Copy the contents of that SSH config
+into your regular SSH config located at `~/.ssh/config`.
 
 ### `error: 'x86_64-linux' is require to build ...`
 
@@ -71,3 +77,25 @@ before running the nix or nixops command.
 Something is wrong with LinuxKit. See the debugging section to try things out.
 
 Leave an issue at https://github.com/nix-community/linuxkit-nix/issues
+
+## Uninstalling
+
+```sh
+# Remove configuration
+rm -rf ~/.cache/nix-linuxkit-builder/
+
+# Remove build machine
+# (edit manually if you have other configuration here)
+sudo rm -f /etc/nix/machines
+
+# Remove LaunchAgent
+launchctl stop org.nix-community.linuxkit-builder
+rm -f ~/Library/LaunchAgents/org.nix-community.linuxkit-builder.plist
+
+# Remove SSH config
+# (edit manually if you have other configuration here)
+sudo rm -rf /var/root/.ssh
+
+# Uninstall Nix package
+nix-env -e linuxkit-builder
+```
