@@ -180,16 +180,19 @@ let
       paths = [
         (writeRunitForegroundService "acpid" ''
           #!/bin/sh
+          mkdir -p /var/lib/acpid && cd /var/lib/acpid
           exec ${pkgsForLinux.busybox}/bin/acpid -f
         '')
 
         (writeRunitForegroundService "sshd" ''
           #!/bin/sh
+          mkdir -p /var/lib/sshd && cd /var/lib/sshd
           exec ${pkgsForLinux.openssh}/bin/sshd -D -e -f ${sshdConfig}
         '')
 
         (writeRunitForegroundService "vpnkit-expose-port" ''
           #!/bin/sh
+          mkdir -p /var/lib/vpnkit-expose-port && cd /var/lib/vpnkit-expose-port
 
           ${pkgsForLinux.go-vpnkit}/bin/vpnkit-expose-port \
             -i \
@@ -203,6 +206,7 @@ let
         (writeRunitForegroundService "vpnkit-forwarder" ''
           #!/bin/sh
 
+          mkdir -p /var/lib/vpnkit-forwarder && cd /var/lib/vpnkit-forwarder
           exec ${pkgsForLinux.go-vpnkit}/bin/vpnkit-forwarder
         '')
       ];
