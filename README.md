@@ -1,6 +1,6 @@
-You should look at the
+*__You should look at the
 [darwin.builder](https://nixos.org/manual/nixpkgs/unstable/#sec-darwin-builder),
-which is now part of nixpkgs.
+which is now part of nixpkgs.__*
 
 linuxkit-nix was started in 2017 when QEMU did not support macOS'
 Hypervisor.framework API. This meant that QEMU had to use full
